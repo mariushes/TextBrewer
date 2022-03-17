@@ -105,6 +105,8 @@ def main():
             state_dict_T = torch.load(checkpoint_T,map_location='cpu')
             missing_keys, un_keys = model_T.load_state_dict(state_dict_T,strict=True)
             logger.info(f"Teacher Model {model_type_T} loaded")
+            
+            #model_T = torch.hub.load('huggingface/pytorch-transformers', 'modelForSequenceClassification', 'gchhablani/bert-base-cased-finetuned-mnli', output_hidden_states=True)
             model_T.to(device)
 
     student = teachers_and_student['student']

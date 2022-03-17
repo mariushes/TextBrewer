@@ -1,15 +1,15 @@
 #set hyperparameters
-OUTPUT_ROOT_DIR=/path/to/output_root_dir
-DATA_ROOT_DIR=/path/to/data_root_dir
+OUTPUT_ROOT_DIR=/work/mhessent/TextBrewer/examples/mnli_example/outputs
+DATA_ROOT_DIR=/work/mhessent/TextBrewer/examples/mnli_example
 
 
 accu=1
 ep=40
 lr=10
 temperature=8
-batch_size=32
+batch_size=128
 length=128
-torch_seed=9580
+torch_seed=1909
 
 taskname='mnli'
 NAME=${taskname}_t${temperature}_TbaseST4tiny_L4SmmdMSE_lr${lr}e${ep}_bs${batch_size}
@@ -21,7 +21,7 @@ model_config_json_file=DistillBertToTiny.json
 cp jsons/${model_config_json_file} ${OUTPUT_DIR}/${model_config_json_file}.run
 
 
-python -u main.distill.py \
+python3 -u main.distill.py \
     --data_dir  $DATA_DIR \
     --do_train \
     --do_eval \

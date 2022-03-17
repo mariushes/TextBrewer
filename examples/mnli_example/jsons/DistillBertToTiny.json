@@ -2,21 +2,23 @@
     "teachers":[
         {
             "model_type":"bert",
-            "prefix":"bertuncased",
-            "vocab_file":"/path/to/vocab.txt",
-            "config_file":"/path/to/config.json",
-            "checkpoint":"/path/to/fine-tuned/checkpoint",
+            "prefix":"bertuncased_mnli",
+            "vocab_file":"/work/mhessent/master_thesis/eval_out/bert-base-uncased/mnli/lr3e-05_bs32_epochs3/checkpoint-36816/vocab.txt",
+            "config_file":"/work/mhessent/master_thesis/eval_out/bert-base-uncased/mnli/lr3e-05_bs32_epochs3/checkpoint-36816/config.json",
+            "checkpoint":"/work/mhessent/master_thesis/eval_out/bert-base-uncased/mnli/lr3e-05_bs32_epochs3/checkpoint-36816/pytorch_model.bin",
             "tokenizer_kwargs":{"do_lower_case": true},
-            "disable":false
+            "disable":false,
+            "output_hidden_states": true
         }
     ],
     "student":{
         "model_type":"bert",
-        "prefix":"bertuncased",
-        "vocab_file":"/path/to/vocab.txt",
+        "prefix":"bertcased_mnli",
+        "vocab_file":"/work/mhessent/master_thesis/eval_out/bert-base-uncased/mnli/lr3e-05_bs32_epochs3/checkpoint-36816/vocab.txt",
         "config_file":"./jsons/bert_config_L4t.json",
         "checkpoint": null,
         "tokenizer_kwargs":{"do_lower_case": true},
-        "disable":false
+        "disable":false,
+        "return_dict":false
     }
 }

@@ -1,15 +1,15 @@
 #set hyperparameters
-OUTPUT_ROOT_DIR=/path/to/output_root_dir
-DATA_ROOT_DIR=/path/to/data_root_dir
+OUTPUT_ROOT_DIR=/work/mhessent/TextBrewer/examples/mnli_example/outputs/training
+DATA_ROOT_DIR=/work/mhessent/TextBrewer/examples/mnli_example
 
 
 accu=1
 ep=3
-lr=2
+lr=3
 temperature=8
 batch_size=32
 length=128
-torch_seed=9580
+torch_seed=1909
 
 taskname='mnli'
 NAME=${taskname}_base_lr${lr}e${ep}_bs${batch_size}_teacher
@@ -21,7 +21,7 @@ model_config_json_file=TrainBertTeacher.json
 cp jsons/${model_config_json_file} ${OUTPUT_DIR}/${model_config_json_file}.run
 
 
-python -u main.trainer.py \
+python3 -u main.trainer.py \
     --data_dir  $DATA_DIR \
     --do_train \
     --do_eval \
