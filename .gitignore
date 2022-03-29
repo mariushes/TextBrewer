@@ -8,3 +8,13 @@ dist/
 .idea
 *.pdf
 *.png
+*.zip
+*.out
+*.csv
+*.pt
+*.bin
+*.pth
+
+examples/mnli_example/MNLI/
+examples/mnli_example/apex/
+examples/mnli_example/__MACOSX/
