@@ -14,9 +14,9 @@ from textbrewer.distiller_utils import move_to_device
 
 def predict(model,eval_datasets,step,output_dir,task_name,local_rank,predict_batch_size,device, do_train_eval=False, train_dataset=None):
     eval_task_names = [task_name]
-    eval_task_names += "mnli-mm" if task_name == "mnli"
-    eval_task_names += "train" if do_train_eval
-    eval_datasets += train_dataset if do_train_eval
+    if task_name == "mnli": eval_task_names.append("mnli-mm")
+    if do_train_eval: eval_task_names.append("train")
+    if do_train_eval: eval_datasets.append(train_dataset)
     eval_output_dir = output_dir
     task_results = {}
     for eval_task,eval_dataset in zip(eval_task_names, eval_datasets):
@@ -62,10 +62,12 @@ def predict(model,eval_datasets,step,output_dir,task_name,local_rank,predict_bat
         for batch in eval_dataloader:
             labels = batch["labels"]
             batch = move_to_device(batch, device)
-            model_predictions = model(**batch)["logits"]
-            if task_name !="stsb":
-                model_predictions = np.argmax(model_predictions, axis=1)
-            metric.add_batch(predictions=model_predictions, references=labels)
+            with torch.no_grad():
+                model_predictions = model(**batch)["logits"]
+                if task_name !="stsb":
+                    model_predictions = np.array(model_predictions.detach().cpu(),dtype=np.float32)
+                    model_predictions = np.argmax(model_predictions, axis=1)
+                metric.add_batch(predictions=model_predictions, references=labels)
         results = metric.compute()
         logger.info("***** Eval results {} task {} *****".format(step, eval_task))
         for key in sorted(results.keys()):
@@ -103,6 +105,8 @@ def write_metric_results(output_eval_file,step, metric_score,eval_task_names):
 
 def write_results(output_eval_file,step,task_results,eval_task_names):
     with open(output_eval_file, "a") as writer:
+        """
+        if "mnli" in eval_task_names:
             all_acc = 0
             writer.write(f"step: {step:<8d} ")
             line = "Acc:"
@@ -114,6 +118,18 @@ def write_results(output_eval_file,step,task_results,eval_task_names):
             all_acc /= len(eval_task_names)
             line += f"All={all_acc:.5f}\n"
             writer.write(line)
+        elif "stsb" in eval_task_names:
+        """
+        writer.write(f"step: {step:<8d} ")
+        line = "Res.: "
+        for eval_task in eval_task_names:
+            for key in task_results[eval_task].keys():
+                res = task_results[eval_task][key]
+                line += f"{eval_task}_{key}={res:.5f} "
+        line += "\n"
+        writer.write(line)
+            
+            
 
 def predict_ens(models,eval_datasets,step,args):
     eval_task_names = ("mnli", "mnli-mm") if args.task_name == "mnli" else (args.task_name,)
