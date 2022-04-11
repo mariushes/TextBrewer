@@ -224,14 +224,14 @@ class DistillationConfig(Config):
 
         self.temperature = temperature
         self.temperature_scheduler = None
-        if temperature_scheduler != 'none':
+        if temperature_scheduler is not 'none':
             assert temperature_scheduler in TEMPERATURE_SCHEDULER, \
-                    f"Invalid temperature_scheduler {temperature_scheduler}"
+                    "Invalid temperature_scheduler"
             self.temperature_scheduler = TEMPERATURE_SCHEDULER[temperature_scheduler]
 
         self.hard_label_weight = hard_label_weight
         self.hard_label_weight_scheduler = None
-        if hard_label_weight_scheduler != 'none':
+        if hard_label_weight_scheduler is not 'none':
             assert hard_label_weight_scheduler in WEIGHT_SCHEDULER, \
                     "Invalid hard_label_weight_scheduler"
             self.hard_label_weight_scheduler = WEIGHT_SCHEDULER[hard_label_weight_scheduler]
@@ -239,7 +239,7 @@ class DistillationConfig(Config):
         self.kd_loss_type = kd_loss_type
         self.kd_loss_weight = kd_loss_weight
         self.kd_loss_weight_scheduler = None
-        if kd_loss_weight_scheduler != 'none':
+        if kd_loss_weight_scheduler is not 'none':
             assert kd_loss_weight_scheduler in WEIGHT_SCHEDULER, \
                     "Invalid kd_loss_weight_scheduler"
             self.kd_loss_weight_scheduler = WEIGHT_SCHEDULER[kd_loss_weight_scheduler]

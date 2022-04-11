@@ -62,12 +62,13 @@ class GeneralDistiller(BasicDistiller):
             self.model_S._forward_hooks = OrderedDict()  # clear hooks
             self.model_T._forward_hooks = OrderedDict()
 
-        super(GeneralDistiller, self).save_and_callback(global_step, step, epoch, callback)
+        stop_training = super(GeneralDistiller, self).save_and_callback(global_step, step, epoch, callback)
 
         if self.has_custom_matches:
             self.model_S._forward_hooks = handles_S  # restore hooks
             self.model_T._forward_hooks = handles_T
-
+        
+        return stop_training
 
     def train_on_batch(self, batch, args):
 
@@ -115,9 +116,12 @@ class GeneralDistiller(BasicDistiller):
                     total_kd_loss += self.kd_loss(l_S, l_T, temperature)
             total_loss += total_kd_loss * self.d_config.kd_loss_weight
             losses_dict['unweighted_kd_loss'] = total_kd_loss
-
+        
+        #FEATURES = ['hidden','attention']
         inters_T = {feature: results_T.get(feature,[]) for feature in FEATURES}
         inters_S = {feature: results_S.get(feature,[]) for feature in FEATURES}
+        
+        
         inputs_mask_T = results_T.get('inputs_mask',None)
         inputs_mask_S = results_S.get('inputs_mask',None)
         for ith,inter_match in enumerate(self.d_config.intermediate_matches):

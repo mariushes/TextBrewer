@@ -35,9 +35,17 @@ class BasicDistiller(AbstractDistiller):
                 torch.distributed.barrier()
         if callback is not None:
             logger.info("Running callback function...")
-            callback(model=self.model_S, step=global_step)
+            result, stop_training = callback(model=self.model_S, epoch=epoch, logger=logger, step=global_step)
+            logger.info(result)
             self.model_S.train()
-
+            
+            return stop_training
+        
+        return False
+            
+        
+        
+        
 
     def write_loss(self, total_loss, writer_step, losses_dict=None):
         if self.rank == 0:
@@ -173,7 +181,9 @@ class BasicDistiller(AbstractDistiller):
                 if (global_step) % print_every == 0:
                     logger.info(f"Global step: {global_step}, epoch step:{step+1}")
                 if (global_step%ckpt_steps==0) or global_step==total_global_steps:
-                    self.save_and_callback(global_step, step, 0, callback)
+                    stop_training = self.save_and_callback(global_step, step, 0, callback)
+                    if stop_training:
+                        return
             if global_step >= total_global_steps:
                 logger.info("Training finished")
                 return
@@ -243,7 +253,9 @@ class BasicDistiller(AbstractDistiller):
                         logger.info(f"Global step: {global_step}, epoch step:{step+1}")
                     if (global_step%train_steps_per_epoch in checkpoints) \
                             and ((current_epoch+1)%self.t_config.ckpt_epoch_frequency==0 or current_epoch+1==num_epochs):
-                        self.save_and_callback(global_step, step, current_epoch, callback)
+                        stop_training = self.save_and_callback(global_step, step, current_epoch, callback)
+                        if stop_training:
+                            return
 
             logger.info(f"Epoch {current_epoch+1} finished")
 

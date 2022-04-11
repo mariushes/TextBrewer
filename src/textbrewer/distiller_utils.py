@@ -21,13 +21,13 @@ if has_apex:
 
 
 logger = logging.getLogger("Distillation")
-#logger.setLevel(logging.INFO)
+logger.setLevel(logging.INFO)
 
-#handler_stream = logging.StreamHandler()
-#handler_stream.setLevel(logging.INFO)
-#formatter = logging.Formatter(fmt='%(asctime)s - %(levelname)s - %(name)s -  %(message)s', datefmt='%Y/%m/%d %H:%M:%S')
-#handler_stream.setFormatter(formatter)
-#logger.addHandler(handler_stream)
+handler_stream = logging.StreamHandler()
+handler_stream.setLevel(logging.INFO)
+formatter = logging.Formatter(fmt='%(asctime)s - %(levelname)s - %(name)s -  %(message)s', datefmt='%Y/%m/%d %H:%M:%S')
+handler_stream.setFormatter(formatter)
+logger.addHandler(handler_stream)
 
 class CustomMatch:
     def __init__(self, module_T, module_S, weight, loss,
@@ -226,8 +226,14 @@ class no_op:
 
 def move_to_device(batch, device):
     r"""Puts each data field to the device"""
+    #print(batch)
+    #print(type(batch))
+    #print(type(batch[0]))
+    #print(type(batch[1]))
     if isinstance(batch, torch.Tensor):
         return batch.to(device)
+    #elif isinstance(batch,dict):
+    #    return {key: value.to(device) for key, value in batch.items()}
     elif isinstance(batch,(list,tuple)):
         return tuple(move_to_device(item,device) for item in batch)
     elif isinstance(batch, abc.Mapping):
